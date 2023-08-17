@@ -46,11 +46,6 @@
             
             var target = new BABYLON.Vector3(0,0,0);
             camera.setTarget(target);
-            
-
-            
-
-
 
 
             //Environment material
@@ -81,34 +76,6 @@
 
             // Postprocessing
             // const postAntiAliasing = new BABYLON.FxaaPostProcess("FXAA", 1, camera);
-            
-            // var ssaoRatio = {
-            //     ssaoRatio: 0.25, // Ratio of the SSAO post-process, in a lower resolution
-            //     blurRatio: 0.5 // Ratio of the combine post-process (combines the SSAO and the scene)
-            //     };
-
-            // var ssao = new BABYLON.SSAO2RenderingPipeline("ssao", scene, ssaoRatio, [camera]);
-            // ssao.radius = 1;
-            // ssao.totalStrength = 1;
-            // ssao.expensiveBlur = false;
-            // ssao.samples = 32;
-            // ssao.maxZ = 50;
-            
-            
-            
-            // const postTonemap = new BABYLON.TonemapPostProcess("tonemap", BABYLON.TonemappingOperator.Reinhard, 2.0, camera);
-            // var lensEffect = new BABYLON.LensRenderingPipeline("lens", {
-            //     edge_blur: 0,
-            //     chromatic_aberration: 0.0,
-            //     distortion: 0.0,
-            //     dof_focus_distance: 25,
-            //     dof_aperture: 3, // set this very high for tilt-shift effect
-            //     grain_amount: 0,
-            //     dof_pentagon: true,
-            //     dof_gain: 0.0,
-            //     dof_threshold: 100,
-            //     dof_darken: 0
-            //     }, scene, 0.5, camera);
 
             // Define default matte material
 
