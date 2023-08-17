@@ -1,5 +1,5 @@
-# polypoli-js
-Babylon.js version of webapp
+# Poliwise - Ontdek jouw politieke identiteit
 
-Initial test version to establish the Blender > GTLF > Babylon pipeline.
-Currently colors are assigned using vertex colors and the looping flag animation works without extra steps. (hooray!)
+### WORK IN PROGRESS
+
+Poliwise is a project being developed to stimulate young voters to inform themselves and cast a vote in the upcoming Belgian elections.
