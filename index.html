@@ -3,6 +3,14 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+        <!-- Favicons -->
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+
         <title>Poliwise - Ontdek jouw politieke identiteit!</title>
 
         <style>
@@ -97,6 +105,17 @@
                 });
                 
             });
+
+
+            // Campfire particles
+            const campfire = new BABYLON.ParticleSystem("campfire", 1000);
+            campfire.particleTexture = new BABYLON.Texture("assets/spark.png",);
+            campfire.emitter = new BABYLON.Vector3(0, 0 ,1);
+            campfire.minSize = 0.02;
+            campfire.maxSize = 0.042;
+            campfire.start();
+
+            // BABYLON.ParticleHelper.CreateDefault(new BABYLON.Vector3(0, 0, 1)).start();
 
             // Debugging
             // console.log(forest);
