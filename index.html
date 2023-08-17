@@ -130,7 +130,11 @@
         //     // POST PROCESSING
 
 
-
+        scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+        scene.fogStart = 17.5;
+        scene.fogEnd = 250;
+        // scene.fogDensity = 0.001;
+        scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.6);
 
 
 
