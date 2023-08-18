@@ -84,7 +84,7 @@
             const scene = new BABYLON.Scene(engine);
 
             // const camera = new BABYLON.TargetCamera("TargetCamera", new BABYLON.Vector3(11,14,12.5), scene);
-            const camera = new BABYLON.ArcRotateCamera("Camera", 11, 14, 12.5, new BABYLON.Vector3(0, 0, 0), scene);
+            const camera = new BABYLON.ArcRotateCamera("Camera", 13.5, 0.9, 22.5, new BABYLON.Vector3(0, 0, 0), scene);
             camera.attachControl(canvas, true);
             camera.fov = 0.5;
 
@@ -152,10 +152,24 @@
 
             // Campfire particles
             const campfire = new BABYLON.ParticleSystem("campfire", 1000);
+            var hemisphericEmitter = campfire.createHemisphericEmitter(0.25);
             campfire.particleTexture = new BABYLON.Texture("assets/spark.png",);
-            campfire.emitter = new BABYLON.Vector3(0, 0 ,1.25);
+            campfire.emitter = new BABYLON.Vector3(0, 0 ,1.18);
             campfire.minSize = 0.02;
             campfire.maxSize = 0.042;
+
+            campfire.minEmitPower = 0.1;
+            campfire.maxEmitPower = 0.2;
+            campfire.gravity = new BABYLON.Vector3(0, 1, 0);
+            var noiseTexture = new BABYLON.NoiseProceduralTexture("perlin", 256, scene);
+            noiseTexture.animationSpeedFactor = 5;
+            noiseTexture.persistence = 2;
+            noiseTexture.brightness = 0.5;
+            noiseTexture.octaves = 2;
+
+            campfire.noiseTexture = noiseTexture;
+            campfire.noiseStrength = new BABYLON.Vector3(1, 1, 1);
+
             campfire.start();
 
             // BABYLON.ParticleHelper.CreateDefault(new BABYLON.Vector3(0, 0, 1)).start();
@@ -164,7 +178,7 @@
             // console.log(forest);
 
             // Show Inspector
-            // scene.debugLayer.show();
+            scene.debugLayer.show();
 
             // POST PROCESSING
 
@@ -228,7 +242,7 @@
 
 
             // Rendering Optimizations
-            engine.setHardwareScalingLevel(1.15);
+            engine.setHardwareScalingLevel(1.075);
 
             var options = new BABYLON.SceneOptimizerOptions();
             options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 4));
@@ -237,7 +251,7 @@
             // Optimizer
             var optimizer = new BABYLON.SceneOptimizer(scene, options);
             optimizer.targetFrameRate = 60;
-            optimizer.trackerDuration = 500;
+            optimizer.trackerDuration = 2500;
             optimizer.start();            
 
             return scene;
