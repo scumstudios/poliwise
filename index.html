@@ -29,8 +29,9 @@
         </style>
 
         <script src="https://cdn.babylonjs.com/babylon.js"></script>
-        <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
         <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+        <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
 
     </head>
 
@@ -138,10 +139,15 @@
             defmat.roughness = 1;
             defmat.metallic = 0;
             defmat.metallicF0Factor = 0;
+
+            // Add fog
+
+            scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+            scene.fogStart = 17.5;
+            scene.fogEnd = 250;
+            scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.6);
             
             // Load Assets
-            // BABYLON.OBJFileLoader.IMPORT_VERTEX_COLORS = true;
-
             let forest = BABYLON.SceneLoader.ImportMesh("","assets/", "assets.glb", scene, function (newMeshes) {
                 newMeshes.forEach(mesh => {
                     mesh.material = defmat;
@@ -177,15 +183,19 @@
             campfire.start();
 
 
+            
+            // UI Title Element
+
+            // var titleTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+
+            // var image = new BABYLON.GUI.Image("title", "assets/title.png");
+            // image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
+            // image.width = 0.25;
+            // image.height = 0.25;
+            // image.top = 0;
+            // titleTexture.addControl(image); 
+
             // POST PROCESSING
-
-
-            scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
-            scene.fogStart = 17.5;
-            scene.fogEnd = 250;
-            scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.6);
-
-
 
             var defaultPipeline = new BABYLON.DefaultRenderingPipeline("DefaultRenderingPipeline", true, scene, scene.cameras);
             if (defaultPipeline.isSupported) {
@@ -243,7 +253,7 @@
             console.log(camera.radius);
 
             // Show Inspector
-            scene.debugLayer.show();
+            // scene.debugLayer.show();
 
 
             // Rendering Optimizations
