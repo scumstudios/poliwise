@@ -88,6 +88,13 @@
             camera.attachControl(canvas, true);
             camera.fov = 0.5;
 
+            camera.allowUpsideDown = false;
+            camera.panningSensibility = 1024;
+            camera.angularSensibilityX = 2048;
+            camera.angularSensibilityY = 2048;
+            camera.lowerRadiusLimit = 5;
+            camera.upperRadiusLimit = 35;
+
             // const target = BABYLON.MeshBuilder.CreateSphere("target", {diameter:0.25}, scene); //scene is optional and defaults to the current scene
             
             var target = new BABYLON.Vector3(0.5,1,0);
@@ -122,9 +129,6 @@
             sg.useContactHardeningShadow = false;
             sg.useKernelBlur = true;
             sg.blurKernel = 8;
-
-            // Postprocessing
-            // const postAntiAliasing = new BABYLON.FxaaPostProcess("FXAA", 0.5, camera);
 
             // Define default matte material
 
@@ -172,13 +176,6 @@
 
             campfire.start();
 
-            // BABYLON.ParticleHelper.CreateDefault(new BABYLON.Vector3(0, 0, 1)).start();
-
-            // Debugging
-            // console.log(forest);
-
-            // Show Inspector
-            scene.debugLayer.show();
 
             // POST PROCESSING
 
@@ -190,55 +187,62 @@
 
 
 
-        var defaultPipeline = new BABYLON.DefaultRenderingPipeline("DefaultRenderingPipeline", true, scene, scene.cameras);
-        if (defaultPipeline.isSupported) {
-            // MSAA
-            defaultPipeline.samples = 2; // 1 by default
-            /* imageProcessing */
-            defaultPipeline.imageProcessingEnabled = true; //true by default
-            if (defaultPipeline.imageProcessingEnabled) {
-                defaultPipeline.imageProcessing.contrast = 1.25; // 1 by default
-                defaultPipeline.imageProcessing.exposure = 1.1; // 1 by default
+            var defaultPipeline = new BABYLON.DefaultRenderingPipeline("DefaultRenderingPipeline", true, scene, scene.cameras);
+            if (defaultPipeline.isSupported) {
+                // MSAA
+                defaultPipeline.samples = 1; // 1 by default
+                /* imageProcessing */
+                defaultPipeline.imageProcessingEnabled = true; //true by default
+                if (defaultPipeline.imageProcessingEnabled) {
+                    defaultPipeline.imageProcessing.contrast = 1.25; // 1 by default
+                    defaultPipeline.imageProcessing.exposure = 1.1; // 1 by default
+                }
+                /* bloom */
+                defaultPipeline.bloomEnabled = true; // false by default
+                if (defaultPipeline.bloomEnabled) {
+                    defaultPipeline.bloomKernel = 128; // 64 by default
+                    defaultPipeline.bloomScale = 0.25; // 0.5 by default
+                    defaultPipeline.bloomThreshold = 0.1; // 0.9 by default
+                    defaultPipeline.bloomWeight = 0.1; // 0.15 by default
+                }
+                
+                /* DOF */
+                var dofDist = BABYLON.Vector3.Distance(camera.position, target)*1000;
+
+                defaultPipeline.depthOfFieldEnabled = true; // false by default
+                if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
+                    defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
+                    defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
+                    defaultPipeline.depthOfField.focalLength = 250; // 50 by default, mm
+                    defaultPipeline.depthOfField.focusDistance = dofDist; // 2000 by default, mm
+                    defaultPipeline.depthOfField.lensSize = 250; // 50 by default
+                }
+                /* FXAA */
+                defaultPipeline.fxaaEnabled = true; // false by default
+                if (defaultPipeline.fxaaEnabled) {
+                    defaultPipeline.fxaa.samples = 1; // 1 by default
+                }
+                /* glowLayer */
+                defaultPipeline.glowLayerEnabled = false;
+                if (defaultPipeline.glowLayerEnabled) {
+                    defaultPipeline.glowLayer.blurKernelSize = 16; // 16 by default
+                    defaultPipeline.glowLayer.intensity = 1; // 1 by default
+                }
+                /* grain */
+                defaultPipeline.grainEnabled = true;
+                if (defaultPipeline.grainEnabled) {
+                    defaultPipeline.grain.animated = true; // false by default
+                    defaultPipeline.grain.intensity = 5; // 30 by default
+                
+                }
+                
             }
-            /* bloom */
-            defaultPipeline.bloomEnabled = true; // false by default
-            if (defaultPipeline.bloomEnabled) {
-                defaultPipeline.bloomKernel = 128; // 64 by default
-                defaultPipeline.bloomScale = 0.25; // 0.5 by default
-                defaultPipeline.bloomThreshold = 0.1; // 0.9 by default
-                defaultPipeline.bloomWeight = 0.1; // 0.15 by default
-            }
-            
-            /* DOF */
-            defaultPipeline.depthOfFieldEnabled = true; // false by default
-            if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
-                defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
-                defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
-                defaultPipeline.depthOfField.focalLength = 200; // 50 by default, mm
-                defaultPipeline.depthOfField.focusDistance = 22500; // 2000 by default, mm
-                defaultPipeline.depthOfField.lensSize = 250; // 50 by default
-                defaultPipeline.depthOfField.gra
-            }
-            /* FXAA */
-            defaultPipeline.fxaaEnabled = true; // false by default
-            if (defaultPipeline.fxaaEnabled) {
-                defaultPipeline.fxaa.samples = 1; // 1 by default
-            }
-            /* glowLayer */
-            defaultPipeline.glowLayerEnabled = false;
-            if (defaultPipeline.glowLayerEnabled) {
-                defaultPipeline.glowLayer.blurKernelSize = 16; // 16 by default
-                defaultPipeline.glowLayer.intensity = 1; // 1 by default
-            }
-            /* grain */
-            defaultPipeline.grainEnabled = true;
-            if (defaultPipeline.grainEnabled) {
-                defaultPipeline.grain.animated = true; // false by default
-                defaultPipeline.grain.intensity = 5; // 30 by default
-               
-            }
-            
-        }
+
+            // Debugging
+            console.log(dofDist);
+
+            // Show Inspector
+            // scene.debugLayer.show();
 
 
             // Rendering Optimizations
@@ -246,7 +250,7 @@
 
             var options = new BABYLON.SceneOptimizerOptions();
             options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 4));
-            options.addOptimization(new BABYLON.PostProcessesOptimization(1));
+            // options.addOptimization(new BABYLON.PostProcessesOptimization(1));
 
             // Optimizer
             var optimizer = new BABYLON.SceneOptimizer(scene, options);
