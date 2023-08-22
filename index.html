@@ -217,16 +217,17 @@
                 }
                 
                 /* DOF */
-                // var dofDist = BABYLON.Vector3.Distance(camera.position, target)*1000;
-                var dofDist = camera.radius*1000;
 
                 defaultPipeline.depthOfFieldEnabled = true; // false by default
                 if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
                     defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
                     defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
                     defaultPipeline.depthOfField.focalLength = 250; // 50 by default, mm
-                    defaultPipeline.depthOfField.focusDistance = dofDist; // 2000 by default, mm
                     defaultPipeline.depthOfField.lensSize = 250; // 50 by default
+                    // Calculate DoF Distance to target
+                    scene.onBeforeRenderObservable.add(() => {
+                        defaultPipeline.depthOfField.focusDistance = camera.radius * 1000; 
+                    });
                 }
                 /* FXAA */
                 defaultPipeline.fxaaEnabled = true; // false by default
