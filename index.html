@@ -144,7 +144,7 @@
 
             scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
             scene.fogStart = 17.5;
-            scene.fogEnd = 250;
+            scene.fogEnd = 420;
             scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.6);
             
             // Load Assets
@@ -159,16 +159,16 @@
                 
             });
 
-            let robot = BABYLON.SceneLoader.ImportMesh("","assets/", "robot.glb", scene, function (newMeshes) {
-                newMeshes.forEach(mesh => {
-                    // mesh.material = defmat;
-                    mesh.receiveShadows = true;
-                    //sg.addShadowCaster(mesh, true);
-                    mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
+            // let robot = BABYLON.SceneLoader.ImportMesh("","assets/", "robot.glb", scene, function (newMeshes) {
+            //     newMeshes.forEach(mesh => {
+            //         // mesh.material = defmat;
+            //         mesh.receiveShadows = true;
+            //         //sg.addShadowCaster(mesh, true);
+            //         mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
                     
-                });
+            //     });
                 
-            });
+            // });
 
 
             // Campfire particles
@@ -219,45 +219,45 @@
                     defaultPipeline.imageProcessing.exposure = 1.1; // 1 by default
                 }
                 /* bloom */
-                defaultPipeline.bloomEnabled = true; // false by default
-                if (defaultPipeline.bloomEnabled) {
-                    defaultPipeline.bloomKernel = 128; // 64 by default
-                    defaultPipeline.bloomScale = 0.25; // 0.5 by default
-                    defaultPipeline.bloomThreshold = 0.1; // 0.9 by default
-                    defaultPipeline.bloomWeight = 0.1; // 0.15 by default
-                }
+                // defaultPipeline.bloomEnabled = true; // false by default
+                // if (defaultPipeline.bloomEnabled) {
+                //     defaultPipeline.bloomKernel = 128; // 64 by default
+                //     defaultPipeline.bloomScale = 0.25; // 0.5 by default
+                //     defaultPipeline.bloomThreshold = 0.1; // 0.9 by default
+                //     defaultPipeline.bloomWeight = 0.1; // 0.15 by default
+                // }
                 
-                /* DOF */
+                // /* DOF */
 
-                defaultPipeline.depthOfFieldEnabled = true; // false by default
-                if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
-                    defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
-                    defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
-                    defaultPipeline.depthOfField.focalLength = 250; // 50 by default, mm
-                    defaultPipeline.depthOfField.lensSize = 250; // 50 by default
-                    // Calculate DoF Distance to target
-                    scene.onBeforeRenderObservable.add(() => {
-                        defaultPipeline.depthOfField.focusDistance = camera.radius * 1000; 
-                    });
-                }
+                // defaultPipeline.depthOfFieldEnabled = true; // false by default
+                // if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
+                //     defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
+                //     defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
+                //     defaultPipeline.depthOfField.focalLength = 250; // 50 by default, mm
+                //     defaultPipeline.depthOfField.lensSize = 250; // 50 by default
+                //     // Calculate DoF Distance to target
+                //     scene.onBeforeRenderObservable.add(() => {
+                //         defaultPipeline.depthOfField.focusDistance = camera.radius * 1000; 
+                //     });
+                // }
                 /* FXAA */
-                defaultPipeline.fxaaEnabled = true; // false by default
-                if (defaultPipeline.fxaaEnabled) {
-                    defaultPipeline.fxaa.samples = 1; // 1 by default
-                }
-                /* glowLayer */
-                defaultPipeline.glowLayerEnabled = false;
-                if (defaultPipeline.glowLayerEnabled) {
-                    defaultPipeline.glowLayer.blurKernelSize = 16; // 16 by default
-                    defaultPipeline.glowLayer.intensity = 1; // 1 by default
-                }
+                // defaultPipeline.fxaaEnabled = true; // false by default
+                // if (defaultPipeline.fxaaEnabled) {
+                //     defaultPipeline.fxaa.samples = 1; // 1 by default
+                // }
+                // /* glowLayer */
+                // defaultPipeline.glowLayerEnabled = false;
+                // if (defaultPipeline.glowLayerEnabled) {
+                //     defaultPipeline.glowLayer.blurKernelSize = 16; // 16 by default
+                //     defaultPipeline.glowLayer.intensity = 1; // 1 by default
+                // }
+
                 /* grain */
-                defaultPipeline.grainEnabled = true;
-                if (defaultPipeline.grainEnabled) {
-                    defaultPipeline.grain.animated = true; // false by default
-                    defaultPipeline.grain.intensity = 5; // 30 by default
-                
-                }
+                // defaultPipeline.grainEnabled = true;
+                // if (defaultPipeline.grainEnabled) {
+                //     defaultPipeline.grain.animated = true; // false by default
+                //     defaultPipeline.grain.intensity = 7.5; // 30 by default
+                // }
                 
             }
 
@@ -269,10 +269,10 @@
 
 
             // Rendering Optimizations
-            engine.setHardwareScalingLevel(1.075);
+            engine.setHardwareScalingLevel(1.33);
 
             var options = new BABYLON.SceneOptimizerOptions();
-            options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 4));
+            // options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 2));
             // options.addOptimization(new BABYLON.PostProcessesOptimization(1));
 
             // Optimizer
