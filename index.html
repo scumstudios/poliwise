@@ -93,12 +93,12 @@
             camera.panningSensibility = 1024;
             camera.angularSensibilityX = 2048;
             camera.angularSensibilityY = 2048;
-            camera.lowerRadiusLimit = 5;
+            camera.lowerRadiusLimit = 8;
             camera.upperRadiusLimit = 42;
 
             // const target = BABYLON.MeshBuilder.CreateSphere("target", {diameter:0.25}, scene); //scene is optional and defaults to the current scene
             
-            var target = new BABYLON.Vector3(0.5,1,0);
+            var target = new BABYLON.Vector3(0,1,0);
             camera.setTarget(target);
 
 
@@ -154,7 +154,18 @@
                     mesh.receiveShadows = true;
                     sg.addShadowCaster(mesh, true);
                     mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
-                    engine.hideLoadingUI();
+                    
+                });
+                
+            });
+
+            let robot = BABYLON.SceneLoader.ImportMesh("","assets/", "robot.glb", scene, function (newMeshes) {
+                newMeshes.forEach(mesh => {
+                    // mesh.material = defmat;
+                    mesh.receiveShadows = true;
+                    //sg.addShadowCaster(mesh, true);
+                    mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
+                    
                 });
                 
             });
@@ -268,7 +279,9 @@
             var optimizer = new BABYLON.SceneOptimizer(scene, options);
             optimizer.targetFrameRate = 60;
             optimizer.trackerDuration = 2500;
-            optimizer.start();            
+            optimizer.start();
+            
+            engine.hideLoadingUI();
 
             return scene;
         };
