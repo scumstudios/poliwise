@@ -98,6 +98,8 @@
             camera.lowerBetaLimit = 0.5;
             camera.upperBetaLimit = 1.15;
 
+            camera.applyVerticalCorrection = true;
+
             // const target = BABYLON.MeshBuilder.CreateSphere("target", {diameter:0.25}, scene); //scene is optional and defaults to the current scene
             
             var target = new BABYLON.Vector3(0,1,0);
@@ -213,7 +215,14 @@
             var defaultPipeline = new BABYLON.DefaultRenderingPipeline("DefaultRenderingPipeline", true, scene, scene.cameras);
             if (defaultPipeline.isSupported) {
                 // MSAA
-                defaultPipeline.samples = 1; // 1 by default
+                defaultPipeline.samples = 2; // 1 by default
+
+                /* FXAA */
+                defaultPipeline.fxaaEnabled = true; // false by default
+                if (defaultPipeline.fxaaEnabled) {
+                    defaultPipeline.fxaa.samples = 1; // 1 by default
+                }
+
                 /* imageProcessing */
                 defaultPipeline.imageProcessingEnabled = true; //true by default
                 if (defaultPipeline.imageProcessingEnabled) {
@@ -242,11 +251,7 @@
                 //         defaultPipeline.depthOfField.focusDistance = camera.radius * 1000; 
                 //     });
                 // }
-                /* FXAA */
-                // defaultPipeline.fxaaEnabled = true; // false by default
-                // if (defaultPipeline.fxaaEnabled) {
-                //     defaultPipeline.fxaa.samples = 1; // 1 by default
-                // }
+                
                 // /* glowLayer */
                 // defaultPipeline.glowLayerEnabled = false;
                 // if (defaultPipeline.glowLayerEnabled) {
@@ -271,7 +276,7 @@
 
 
             // Rendering Optimizations
-            engine.setHardwareScalingLevel(1.33);
+            engine.setHardwareScalingLevel(1);
 
             var options = new BABYLON.SceneOptimizerOptions();
             // options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 2));
