@@ -3,6 +3,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta content="noindex,nofollow" name="robots" />
 
         <!-- Favicons -->
 
@@ -34,6 +35,7 @@
         <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
         <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
         <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+        
 
         <script type="text/javascript">
             // Start Screen Hiding Function
@@ -52,8 +54,6 @@
                 }
             }
          </script>
-         
-
     </head>
 
    <body>
@@ -127,7 +127,7 @@
         BABYLON.DefaultLoadingScreen.prototype.hideLoadingUI = function(){
             document.getElementById("loadScreen").style.display = "none";
             console.log("scene is now loaded");
-}
+        }
 
         
         const createScene = function(){
@@ -260,24 +260,6 @@
             campfire.noiseStrength = new BABYLON.Vector3(1, 1, 1);
 
             campfire.start();
-
-            // Dialog Popup Test
-            
-            // var testButton = document.createElement("button");
-            // testButton.style.bottom = "100px";
-            // testButton.style.right = "30px";
-            // testButton.textContent = "click";
-            // testButton.style.width = "100px"
-            // testButton.style.height = "100px"
-
-            // testButton.style.position = "absolute";
-            // testButton.style.color = "black";
-
-            // document.body.appendChild(testButton);
-            
-            // testButton.addEventListener("click", () => {
-            //    dialog_pop("Ik ben een politiek geëngageerde robot, hoe kan ik u van dienst zijn?");
-            // })
 
             // POST PROCESSING
 
