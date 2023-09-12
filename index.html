@@ -11,6 +11,8 @@
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
         <link rel="manifest" href="/site.webmanifest">
 
+        <link rel="stylesheet" href="style.css">
+
         <title>Poliwise - Ontdek jouw politieke identiteit!</title>
 
         <style>
@@ -33,15 +35,66 @@
         <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
         <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
 
+        <script type="text/javascript">
+            // Start Screen Hiding Function
+            function hide_start() {
+                document.getElementById("startContainer").style.visibility = 'hidden'
+            }
+
+            // Dialog Interaction Function
+            function dialog_pop(text) {
+                if (document.getElementById("dialogFrame").style.visibility == "visible") {
+                    document.getElementById("dialogFrame").style.visibility = 'hidden';
+                }
+                else {
+                    document.getElementById("dialogFrame").style.visibility = 'visible';
+                    document.getElementById("dialogText").textContent = text
+                }
+            }
+         </script>
+         
+
     </head>
 
    <body>
     
+    <!-- Start Screen -->
+
+    <div id="startContainer">
+        <div id="startFrame">
+            <div id="startTitle"></div>
+            <div id="startText">
+                <h1>
+                    Welkom bij Poliwise!
+                </h1>
+                <p>
+                    Informeer je over de Belgsiche verkiezingen op een interactive manier.
+                </p>
+            </div>
+            <div id="startInteraction">
+                <button id="startButton" onclick="hide_start()">
+                    START
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dialog Frame -->
+
+    <div id="dialogFrame">
+        <div id="dialogWrap">
+            <div id="dialogPortrait"></div>
+            <div id="dialogText">
+                Lorem Ipsum
+            </div>
+        </div>
+    </div>
+
 	<canvas id="renderCanvas"></canvas>
 
 	<script>
         const canvas = document.getElementById("renderCanvas"); // Get the canvas element
-        const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+        const engine = new BABYLON.Engine(canvas, true, { stencil: true }); // Generate the BABYLON 3D engine
 
         BABYLON.DefaultLoadingScreen.prototype.displayLoadingUI = function () {
             if (document.getElementById("loadScreen")) {
@@ -93,14 +146,10 @@
             camera.panningSensibility = 1024;
             camera.angularSensibilityX = 2048;
             camera.angularSensibilityY = 2048;
-            camera.lowerRadiusLimit = 16;
+            camera.lowerRadiusLimit = 8;
             camera.upperRadiusLimit = 42;
             camera.lowerBetaLimit = 0.5;
             camera.upperBetaLimit = 1.15;
-
-            camera.applyVerticalCorrection = true;
-
-            // const target = BABYLON.MeshBuilder.CreateSphere("target", {diameter:0.25}, scene); //scene is optional and defaults to the current scene
             
             var target = new BABYLON.Vector3(0,1,0);
             camera.setTarget(target);
@@ -126,8 +175,8 @@
             sun.shadowEnabled = true;
             sun.autoCalcShadowZBounds = true;
         
-
-            const sg = new BABYLON.ShadowGenerator(512, sun);
+            // Shadows
+            const sg = new BABYLON.ShadowGenerator(1024, sun);
             sg.bias = 0.0005;
             sg.darkness = 0;
             sg.useBlurCloseExponentialShadowMap = true;
@@ -136,7 +185,6 @@
             sg.blurKernel = 8;
 
             // Define default matte material
-
             const defmat = new BABYLON.PBRMaterial("defmat", scene);
             defmat.reflectivityColor = new BABYLON.Color3(0, 0, 0);
             defmat.transparencyMode = 0;
@@ -145,10 +193,9 @@
             defmat.metallicF0Factor = 0;
 
             // Add fog
-
             scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
-            scene.fogStart = 17.5;
-            scene.fogEnd = 420;
+            scene.fogStart = 20;
+            scene.fogEnd = 200;
             scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.6);
             
             // Load Assets
@@ -157,28 +204,45 @@
                     mesh.material = defmat;
                     mesh.receiveShadows = true;
                     sg.addShadowCaster(mesh, true);
-                    mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
-                    
+                    // mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD; 
                 });
-                
+                // let flag = scene.getMeshByName("GEO.Flag.Keyed")
+                // flag.sideOrientation = BABYLON.Mesh.DOUBLESIDE;
             });
 
-            // let robot = BABYLON.SceneLoader.ImportMesh("","assets/", "robot.glb", scene, function (newMeshes) {
-            //     newMeshes.forEach(mesh => {
-            //         // mesh.material = defmat;
-            //         mesh.receiveShadows = true;
-            //         //sg.addShadowCaster(mesh, true);
-            //         mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
-                    
-            //     });
-                
-            // });
+            let robot = BABYLON.SceneLoader.ImportMesh("","assets/", "robot.glb", scene, function (newMeshes) {
+                newMeshes.forEach(mesh => {
+                    // mesh.material = defmat;
+                    mesh.receiveShadows = true;
+                    // sg.addShadowCaster(mesh, true);
+                    // mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_STANDARD;
 
+                    // Higlighting
+                    let robotMesh = scene.getMeshByName("GEO.Robot")
+                    // OUTLINE
+                    robotMesh.renderOutline = true;
+                    robotMesh.outlineColor = new BABYLON.Color3(1, 1, 0);
+                    robotMesh.outlineWidth = 0.05;
+
+                    // HIGHLIGHT
+                    // var hl = new BABYLON.HighlightLayer("hl1", scene);
+                    // hl.addMesh(robotMesh, new BABYLON.Color3(1 ,1 ,0));
+               
+                    // Click Trigger
+                    robotMesh.actionManager = new BABYLON.ActionManager(scene);
+                    robotMesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+		                dialog_pop("Ik ben een politiek geëngageerde robot, hoe kan ik u van dienst zijn?");
+                            if (robotMesh.outlineWidth > 0) {
+                                robotMesh.outlineWidth = 0;
+                            }
+	                }));
+                });
+            });
 
             // Campfire particles
             const campfire = new BABYLON.ParticleSystem("campfire", 1000);
             var hemisphericEmitter = campfire.createHemisphericEmitter(0.25);
-            campfire.particleTexture = new BABYLON.Texture("assets/spark.png",);
+            campfire.particleTexture = new BABYLON.Texture("img/spark.png",);
             campfire.emitter = new BABYLON.Vector3(0, 0 ,1.18);
             campfire.minSize = 0.02;
             campfire.maxSize = 0.042;
@@ -197,31 +261,36 @@
 
             campfire.start();
 
-
+            // Dialog Popup Test
             
-            // UI Title Element
+            // var testButton = document.createElement("button");
+            // testButton.style.bottom = "100px";
+            // testButton.style.right = "30px";
+            // testButton.textContent = "click";
+            // testButton.style.width = "100px"
+            // testButton.style.height = "100px"
 
-            // var titleTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+            // testButton.style.position = "absolute";
+            // testButton.style.color = "black";
 
-            // var image = new BABYLON.GUI.Image("title", "assets/title.png");
-            // image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
-            // image.width = 0.25;
-            // image.height = 0.25;
-            // image.top = 0;
-            // titleTexture.addControl(image); 
+            // document.body.appendChild(testButton);
+            
+            // testButton.addEventListener("click", () => {
+            //    dialog_pop("Ik ben een politiek geëngageerde robot, hoe kan ik u van dienst zijn?");
+            // })
 
             // POST PROCESSING
 
             var defaultPipeline = new BABYLON.DefaultRenderingPipeline("DefaultRenderingPipeline", true, scene, scene.cameras);
             if (defaultPipeline.isSupported) {
                 // MSAA
-                defaultPipeline.samples = 2; // 1 by default
+                defaultPipeline.samples = 1; // 1 by default
 
                 /* FXAA */
-                defaultPipeline.fxaaEnabled = true; // false by default
-                if (defaultPipeline.fxaaEnabled) {
-                    defaultPipeline.fxaa.samples = 1; // 1 by default
-                }
+                // defaultPipeline.fxaaEnabled = true; // false by default
+                // if (defaultPipeline.fxaaEnabled) {
+                //     defaultPipeline.fxaa.samples = 1; // 1 by default
+                // }
 
                 /* imageProcessing */
                 defaultPipeline.imageProcessingEnabled = true; //true by default
