@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta content="noindex,nofollow" name="robots" />
+
+        <!-- Favicons -->
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+
+        <link rel="stylesheet" href="style.css">
+
+        <title>Poliwise - Ontdek jouw politieke identiteit!</title>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+
+        <script src="https://cdn.babylonjs.com/babylon.js"></script>
+        <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+        <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+        
+
+        <script type="text/javascript">
+            // Start Screen Hiding Function
+            function hide_start() {
+                document.getElementById("startContainer").style.visibility = 'hidden'
+            }
+
+            // Dialog Interaction Function
+            function dialog_pop(text) {
+                if (document.getElementById("dialogFrame").style.visibility == "visible") {
+                    document.getElementById("dialogFrame").style.visibility = 'hidden';
+                }
+                else {
+                    document.getElementById("dialogFrame").style.visibility = 'visible';
+                    document.getElementById("dialogText").textContent = text
+                }
+            }
+         </script>
+    </head>
+
+   <body>
+    
+    <!-- Start Screen -->
+
+    <div id="startContainer">
+        <div id="startFrame">
+            <div id="startTitle"></div>
+            <div id="startText">
+                <h1>
+                    Welkom bij Poliwise!
+                </h1>
+                <p>
+                    Informeer je over de Belgsiche verkiezingen op een interactive manier.
+                </p>
+            </div>
+            <div id="startInteraction">
+                <button id="startButton" onclick="hide_start()">
+                    START
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dialog Frame -->
+
+    <div id="dialogFrame">
+        <div id="dialogWrap">
+            <div id="dialogPortrait"></div>
+            <div id="dialogText">
+                Lorem Ipsum
+            </div>
+        </div>
+    </div>
+
+	<canvas id="renderCanvas"></canvas>
+
+	<script>
+        const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+        const engine = new BABYLON.Engine(canvas, true, { stencil: true }); // Generate the BABYLON 3D engine
+
+        BABYLON.DefaultLoadingScreen.prototype.displayLoadingUI = function () {
+            if (document.getElementById("loadScreen")) {
+                // Do not add a loading screen if there is already one
+                document.getElementById("loadScreen").style.display = "initial";
+                return;
+            }
+            this._loadingDiv = document.createElement("div");
+            this._loadingDiv.id = "loadScreen";
+            this._loadingDiv.innerHTML = "Loading...";
+            var customLoadingScreenCss = document.createElement('style');
+            customLoadingScreenCss.type = 'text/css';
+            customLoadingScreenCss.innerHTML = `
+            #loadScreen{;
+                display: flex;
+                justify-content: center;
+                align-content: center;
+                flex-direction: column;
+                text-align: center;
+                color: #fff;
+                background: #000;
+            }
+            `;
+            document.getElementsByTagName('head')[0].appendChild(customLoadingScreenCss);
+            this._resizeLoadingUI();
+            window.addEventListener("resize", this._resizeLoadingUI);
+            document.body.appendChild(this._loadingDiv);
+        };
+
+        BABYLON.DefaultLoadingScreen.prototype.hideLoadingUI = function(){
+            document.getElementById("loadScreen").style.display = "none";
+            console.log("scene is now loaded");
+        }
+
+        
+        const createScene = function(){
+
+            engine.displayLoadingUI();
+
+            // Creates a basic Babylon Scene object
+            const scene = new BABYLON.Scene(engine);
+
+            // const camera = new BABYLON.TargetCamera("TargetCamera", new BABYLON.Vector3(11,14,12.5), scene);
+            const camera = new BABYLON.ArcRotateCamera("Camera", 13.5, 0.9, 22.5, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.fov = 0.5;
+
+            camera.allowUpsideDown = false;
+            camera.panningSensibility = 1024;
+            camera.angularSensibilityX = 2048;
+            camera.angularSensibilityY = 2048;
+            camera.lowerRadiusLimit = 8;
+            camera.upperRadiusLimit = 42;
+            camera.lowerBetaLimit = 0.5;
+            camera.upperBetaLimit = 1.15;
+            
+            var target = new BABYLON.Vector3(0,1,0);
+            camera.setTarget(target);
+
+
+            //Environment material
+            // var box = BABYLON.Mesh.CreateBox('SkyBox', 1000, scene, false, BABYLON.Mesh.BACKSIDE);
+            // box.material = new BABYLON.SkyMaterial('sky', scene);
+            // box.material.inclination = -0.35;
+            // box.material.azimuth = 0.6;
+            // box.material.luminance = 0.5;
+            // box.material.turbidity = 0.33;
+
+            // Set up lighting
+            const sky = new BABYLON.HemisphericLight("Sky", new BABYLON.Vector3(-0.5, 1, 0), scene);
+            const sun = new BABYLON.DirectionalLight("Sun", new BABYLON.Vector3(1, -0.75, 0.5), scene);
+            
+            sky.intensity = 0.42;
+
+            sun.position = new BABYLON.Vector3(0, 10, 0);
+            sun.diffuse = new BABYLON.Color3(1, 0.98, 0.7);
+            sun.intensity = 2;
+            sun.shadowEnabled = true;
+            sun.autoCalcShadowZBounds = true;
+
+            scene.clearColor = new BABYLON.Color3(0.4, 0.5, 0.6);
+        
+            // Shadows
+            const sg = new BABYLON.ShadowGenerator(1024, sun);
+            sg.bias = 0.0005;
+            sg.darkness = 0;
+            sg.useBlurCloseExponentialShadowMap = true;
+            sg.useContactHardeningShadow = false;
+            sg.useKernelBlur = true;
+            sg.blurKernel = 8;
+
+            // Define default matte material
+            const defmat = new BABYLON.PBRMaterial("defmat", scene);
+            defmat.reflectivityColor = new BABYLON.Color3(0, 0, 0);
+            defmat.transparencyMode = 0;
+            defmat.roughness = 1;
+            defmat.metallic = 0;
+            defmat.metallicF0Factor = 0;
+
+            // Add fog
+            // scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+            // scene.fogStart = 20;
+            // scene.fogEnd = 200;
+            // scene.fogColor = new BABYLON.Color3(0.5, 0.5, 0.6);
+            
+            // // Load Assets
+            
+            let t_parliament = BABYLON.SceneLoader.ImportMesh("","assets/", "t_parliament.glb", scene, function (newMeshes) {
+                newMeshes.forEach(mesh => {
+                    mesh.material = defmat;
+                    mesh.receiveShadows = true;
+                    sg.addShadowCaster(mesh, true); 
+                });
+            });
+
+            // POST PROCESSING
+
+            var defaultPipeline = new BABYLON.DefaultRenderingPipeline("DefaultRenderingPipeline", true, scene, scene.cameras);
+            if (defaultPipeline.isSupported) {
+                // MSAA
+                defaultPipeline.samples = 1; // 1 by default
+
+                /* FXAA */
+                // defaultPipeline.fxaaEnabled = true; // false by default
+                // if (defaultPipeline.fxaaEnabled) {
+                //     defaultPipeline.fxaa.samples = 1; // 1 by default
+                // }
+
+                /* imageProcessing */
+                // defaultPipeline.imageProcessingEnabled = true; //true by default
+                // if (defaultPipeline.imageProcessingEnabled) {
+                //     defaultPipeline.imageProcessing.contrast = 1.25; // 1 by default
+                //     defaultPipeline.imageProcessing.exposure = 1.1; // 1 by default
+                // }
+                /* bloom */
+                // defaultPipeline.bloomEnabled = true; // false by default
+                // if (defaultPipeline.bloomEnabled) {
+                //     defaultPipeline.bloomKernel = 32; // 64 by default
+                //     defaultPipeline.bloomScale = 1; // 0.5 by default
+                //     defaultPipeline.bloomThreshold = 0.1; // 0.9 by default
+                //     defaultPipeline.bloomWeight = 0.1; // 0.15 by default
+                // }
+                
+                // /* DOF */
+                // defaultPipeline.depthOfFieldEnabled = true; // false by default
+                // if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
+                //     defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
+                //     defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
+                //     defaultPipeline.depthOfField.focalLength = 250; // 50 by default, mm
+                //     defaultPipeline.depthOfField.lensSize = 250; // 50 by default
+                //     // Calculate DoF Distance to target
+                //     scene.onBeforeRenderObservable.add(() => {
+                //         defaultPipeline.depthOfField.focusDistance = camera.radius * 1000; 
+                //     });
+                // }
+
+                /* grain */
+                // defaultPipeline.grainEnabled = true;
+                // if (defaultPipeline.grainEnabled) {
+                //     defaultPipeline.grain.animated = true; // false by default
+                //     defaultPipeline.grain.intensity = 7.5; // 30 by default
+                // }
+                
+            }
+
+            // Debugging
+            console.log(camera.radius);
+
+            // Show Inspector
+            // scene.debugLayer.show();
+
+
+            // Rendering Optimizations
+            engine.setHardwareScalingLevel(1);
+
+            var options = new BABYLON.SceneOptimizerOptions();
+            options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 2));
+            // options.addOptimization(new BABYLON.PostProcessesOptimization(1));
+
+            // Optimizer
+            var optimizer = new BABYLON.SceneOptimizer(scene, options);
+            optimizer.targetFrameRate = 60;
+            optimizer.trackerDuration = 2500;
+            optimizer.start();
+            
+            engine.hideLoadingUI();
+
+            return scene;
+        };
+        
+        const scene = createScene(); //Call the createScene function
+        
+        // Register a render loop to repeatedly render the scene
+        engine.runRenderLoop(function () {
+                scene.render();
+        });
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function () {
+                engine.resize();
+        });
+	</script>
+
+   </body>
+
+</html>
