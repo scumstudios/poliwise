@@ -30,17 +30,6 @@
             function hide_start() {
                 document.getElementById("startContainer").style.visibility = 'hidden'
             }
-
-            // Dialog Interaction Function
-            function dialog_pop(text) {
-                if (document.getElementById("dialogFrame").style.visibility == "visible") {
-                    document.getElementById("dialogFrame").style.visibility = 'hidden';
-                }
-                else {
-                    document.getElementById("dialogFrame").style.visibility = 'visible';
-                    document.getElementById("dialogText").textContent = text
-                }
-            }
          </script>
 
          <!-- Title -->
@@ -49,10 +38,7 @@
 
    <body>
 
-    <canvas id="renderCanvas"></canvas>
-
-    <!-- Main render script -->
-    <script src="scripts/main.js"></script>
+    
     
     <!-- Start Screen -->
 
@@ -86,7 +72,10 @@
         </div>
     </div>
 
-	
+	<canvas id="renderCanvas"></canvas>
+
+    <!-- Main render script -->
+    <script src="scripts/main.js"></script>
 
    </body>
 

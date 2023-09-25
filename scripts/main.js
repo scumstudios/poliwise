@@ -1,6 +1,23 @@
-console.log('TEST')
+// HTML UI FUNCTIONS
+
+// Dialog Interaction Function
+function dialog_pop(text) {
+    if (document.getElementById("dialogFrame").style.visibility == "visible") {
+        if (document.getElementById("dialogText").textContent != text) {
+            document.getElementById("dialogText").textContent = text;
+        }
+        else {
+            document.getElementById("dialogFrame").style.visibility = 'hidden';
+        }
+    }
+    else {
+        document.getElementById("dialogFrame").style.visibility = 'visible';
+        document.getElementById("dialogText").textContent = text;  
+    }
+}
 
 
+// BABYLON
 
 // Get Canvas
 const canvas = document.getElementById("renderCanvas");
@@ -123,12 +140,13 @@ const createScene = function(){
             mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
             mesh.outlineWidth = 0.025;
             
-            // Glow
+            // Glow & Dialog
             hl.addMesh(mesh, BABYLON.Color3.Yellow());
 
             mesh.actionManager = new BABYLON.ActionManager(scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-                dialog_pop("Ik ben een politiek geëngageerde robot, hoe kan ik u van dienst zijn?");
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+                dialog_pop("Dit is het kasteel van Laken.");
+                hl.removeMesh(mesh);
             }));
 
             sg.addShadowCaster(mesh, true);
@@ -146,6 +164,15 @@ const createScene = function(){
             mesh.renderOutline = true;
             mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
             mesh.outlineWidth = 0.025;
+
+            // Glow & Dialog
+            hl.addMesh(mesh, BABYLON.Color3.Yellow());
+
+            mesh.actionManager = new BABYLON.ActionManager(scene);
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+                dialog_pop("Dit is het federaal parlement.");
+                hl.removeMesh(mesh);
+            }));
             
             sg.addShadowCaster(mesh, true);
         });
