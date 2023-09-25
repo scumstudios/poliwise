@@ -3,6 +3,8 @@
     --pink: #E0A2FF;
     --blue: #3900A7;
     --yellow: #FCE815;
+
+    --pinktp: rgba(224, 162, 255, 0.8);
 }
 
 
@@ -110,21 +112,22 @@ html, body {
 
 #dialogWrap{
     margin: 2vh auto;
-    background-color: var(--pink);
+    background-color: var(--pinktp);
     width: 95%;
     max-width: 1280px;
     height: 20vh;
     display: flex;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--yellow);
     border-radius: 10px;
     backdrop-filter: blur(10px);
-    border-style: solid;
-    border-width: 3px;
-    border-color: #FCE815;
+    -webkit-backdrop-filter: blur(10px);
 }
 
 #dialogPortrait {
     height: 100%;
-    min-width: 25%;
+    min-width: 20vh;
     flex: 1;
     background-image: url(img/kiez_logo.jpg);
     background-size: cover;
