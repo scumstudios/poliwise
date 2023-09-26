@@ -187,7 +187,7 @@ const createScene = function(){
                     // hl.addMesh(mesh, BABYLON.Color3.White());
                 }));
 
-                // TODO: Highlight Selection
+                // TODO: Highlight
                 // mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickOutTrigger, function () {
                 //     dialog_pop(dialogText);
                 //     hl.removeMesh(mesh);
