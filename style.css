@@ -140,5 +140,19 @@ html, body {
     padding: 2vh;
     flex: 4;
     width: auto;
-    font-size: 32px;
+    font-size: 5vmin;
+}
+
+/* LOGO */
+
+#logoFrame {
+    position: absolute;
+    z-index: 99;
+    bottom: 10px;
+    left: 10px;
+    width: 64px;
+    height: 64px;
+    background-color: var(--blue);
+    background-image: url(/img/kiez_logo.jpg);
+    background-size: cover;
 }

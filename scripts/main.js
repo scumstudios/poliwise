@@ -67,25 +67,26 @@ const createScene = function(){
     // Creates a basic Babylon Scene object
     const scene = new BABYLON.Scene(engine);
 
-    // const camera = new BABYLON.TargetCamera("TargetCamera", new BABYLON.Vector3(11,14,12.5), scene);
-    const camera = new BABYLON.ArcRotateCamera("Camera", 13.5, 0.9, 32, new BABYLON.Vector3(0, 0, 0), scene);
+    
+    // Create Camera
+    const camera = new BABYLON.ArcRotateCamera("Camera", 13.5, 0.9, 96, new BABYLON.Vector3(0, 0, 0), scene);
     camera.attachControl(canvas, true);
     camera.fov = 0.5;
 
     camera.allowUpsideDown = false;
-    camera.panningSensibility = 1024;
+    camera.panningSensibility = 0;
     camera.angularSensibilityX = 2048;
     camera.angularSensibilityY = 2048;
-    camera.lowerRadiusLimit = 8;
-    camera.upperRadiusLimit = 64;
+    camera.lowerRadiusLimit = 64;
+    camera.upperRadiusLimit = 128;
     camera.lowerBetaLimit = 0.5;
     camera.upperBetaLimit = 1.15;
     
-    var target = new BABYLON.Vector3(0,1,0);
+    var target = new BABYLON.Vector3(0,0,0);
     camera.setTarget(target);
 
 
-    // Set up lighting
+    // Lighting Setup
     const sky = new BABYLON.HemisphericLight("Sky", new BABYLON.Vector3(-0.5, 1, 0), scene);
     const sun = new BABYLON.DirectionalLight("Sun", new BABYLON.Vector3(0, -1, 0), scene);
     
@@ -99,10 +100,13 @@ const createScene = function(){
     sun.shadowEnabled = true;
     sun.autoCalcShadowZBounds = true;
 
+    
+    //Background Color
     scene.clearColor = new BABYLON.Color3(0.22, 0, 0.65);
 
+    
     // Shadows
-    const sg = new BABYLON.ShadowGenerator(1024, sun);
+    const sg = new BABYLON.ShadowGenerator(512, sun);
     sg.bias = 0.0005;
     sg.darkness = 0;
     sg.useBlurCloseExponentialShadowMap = true;
@@ -110,7 +114,8 @@ const createScene = function(){
     sg.useKernelBlur = true;
     sg.blurKernel = 8;
 
-    // Define default matte material
+    
+    // Define Default Material
     const defmat = new BABYLON.PBRMaterial("defmat", scene);
     defmat.reflectivityColor = new BABYLON.Color3(0, 0, 0);
     defmat.transparencyMode = 0;
@@ -121,64 +126,95 @@ const createScene = function(){
     defmat.iridescence.isEnabled = true;
     defmat.iridescence.indexOfRefraction = 1.8;
     
+
     // Background Sounds
     const sound = new BABYLON.Sound("forest", "../assets/birdloop.ogg", scene, null, { loop: true, autoplay: true });
+
 
     // Hightlight Layer
     const hl = new BABYLON.HighlightLayer("hl1", scene);
 
 
-    // Load Assets
-    let t_palace = BABYLON.SceneLoader.ImportMeshAsync("","../assets/", "t_palace.glb").then((result) => {
-        result.meshes.forEach(mesh => {
-            // Set materials
-            mesh.material = defmat;
-            mesh.receiveShadows = true;
-            
-            // Set outline
-            mesh.renderOutline = true;
-            mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
-            mesh.outlineWidth = 0.025;
-            
-            // Glow & Dialog
-            hl.addMesh(mesh, BABYLON.Color3.Yellow());
+    // Camera Movement
+    var camMover = new BABYLON.TransformNode("camMover", scene);
+    camera.parent = camMover;
 
-            mesh.actionManager = new BABYLON.ActionManager(scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
-                dialog_pop("Dit is het kasteel van Laken.");
-                hl.removeMesh(mesh);
-            }));
+    function cam_move(destination) {
+        const frameRate = 1;
 
-            sg.addShadowCaster(mesh, true);
-        });
-    });
+        const camTween = new BABYLON.Animation("camTween", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-    let t_parliament = BABYLON.SceneLoader.ImportMeshAsync("","../assets/", "t_parliament.glb").then((result) => {
-        result.meshes.forEach(mesh => {
-            // Set materials
-            mesh.material = defmat;
-            mesh.receiveShadows = true;
-            mesh.position = new BABYLON.Vector3(0,0,-5);
-            
-            // Set outline
-            mesh.renderOutline = true;
-            mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
-            mesh.outlineWidth = 0.025;
+        const keyFrames = [];
 
-            // Glow & Dialog
-            hl.addMesh(mesh, BABYLON.Color3.Yellow());
+        keyFrames.push ({frame: 0, value: camMover.position});
+        keyFrames.push ({frame: 1, value: destination});
+        camTween.setKeys(keyFrames);
 
-            mesh.actionManager = new BABYLON.ActionManager(scene);
-            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
-                dialog_pop("Dit is het federaal parlement.");
-                hl.removeMesh(mesh);
-            }));
-            
-            sg.addShadowCaster(mesh, true);
-        });
-    });
+        const easingFunction = new BABYLON.QuinticEase();
+        easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
+        camTween.setEasingFunction(easingFunction);
+
+        camMover.animations.push(camTween);
+        scene.beginAnimation(camMover, 0, 2, true);
+    };
     
 
+    // Load Asset Function
+    function loadTile(tileName, tilePosition, dialogText){
+        BABYLON.SceneLoader.ImportMeshAsync("","../assets/", (tileName + ".glb")).then((result) => {
+            result.meshes.forEach(mesh => {
+                // Define 
+                mesh.material = defmat;
+                mesh.receiveShadows = true;
+                sg.addShadowCaster(mesh, true);
+    
+                // Set position
+                if(mesh.id != "__root__"){} else {mesh.position = tilePosition;}
+                
+                // Set outline
+                mesh.renderOutline = true;
+                mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
+                mesh.outlineWidth = 0.025;
+    
+                // Glow, Dialog Pop & Movement
+                hl.addMesh(mesh, BABYLON.Color3.Yellow());
+    
+                mesh.actionManager = new BABYLON.ActionManager(scene);
+                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+                    cam_move(tilePosition);
+                    dialog_pop(dialogText);
+                    hl.removeMesh(mesh);
+                    // hl.addMesh(mesh, BABYLON.Color3.White());
+                }));
+
+                // TODO: Highlight Selection
+                // mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickOutTrigger, function () {
+                //     dialog_pop(dialogText);
+                //     hl.removeMesh(mesh);
+    
+                //     cam_move(tilePosition);
+                // }));
+                
+                
+            });
+        });
+    }
+
+    //Tile Loading
+    loadTile("t_palace", new BABYLON.Vector3(0,0,0), "Dit is het kasteel van Laken.");
+    loadTile("t_parliament", new BABYLON.Vector3(0,0,-10), "Dit is het federaal parlement.");
+    loadTile("t_debug", new BABYLON.Vector3(0,0,10), "0,0,10");
+    loadTile("t_debug", new BABYLON.Vector3(10,0,-10), "10,0,-10");
+    loadTile("t_debug", new BABYLON.Vector3(10,0,10), "10,0,10");
+    loadTile("t_debug", new BABYLON.Vector3(10,0,0), "10,0,0");
+    loadTile("t_debug", new BABYLON.Vector3(-10,0,10), "-10,0,10");
+    loadTile("t_debug", new BABYLON.Vector3(-10,0,0), "-10,0,0");
+    loadTile("t_debug", new BABYLON.Vector3(-10,0,-10), "-10,0,-10");
+    loadTile("t_debug", new BABYLON.Vector3(10,10,-10), "10,10,-10");
+    loadTile("t_debug", new BABYLON.Vector3(0,10,-10), "0,10,-10");
+    loadTile("t_debug", new BABYLON.Vector3(-10,10,-10), "-10,10,-10");
+    
+    
 
     // POST PROCESSING
 
@@ -187,55 +223,12 @@ const createScene = function(){
         // MSAA
         defaultPipeline.samples = 1; // 1 by default
 
-        /* FXAA */
-        // defaultPipeline.fxaaEnabled = true; // false by default
-        // if (defaultPipeline.fxaaEnabled) {
-        //     defaultPipeline.fxaa.samples = 1; // 1 by default
-        // }
-
         /* imageProcessing */
-        defaultPipeline.imageProcessingEnabled = false; //true by default
-        // if (defaultPipeline.imageProcessingEnabled) {
-        //     defaultPipeline.imageProcessing.contrast = 1.25; // 1 by default
-        //     defaultPipeline.imageProcessing.exposure = 1.1; // 1 by default
-        // }
-        /* bloom */
-        // defaultPipeline.bloomEnabled = true; // false by default
-        // if (defaultPipeline.bloomEnabled) {
-        //     defaultPipeline.bloomKernel = 32; // 64 by default
-        //     defaultPipeline.bloomScale = 1; // 0.5 by default
-        //     defaultPipeline.bloomThreshold = 0.1; // 0.9 by default
-        //     defaultPipeline.bloomWeight = 0.1; // 0.15 by default
-        // }
-        
-        // /* DOF */
-        // defaultPipeline.depthOfFieldEnabled = true; // false by default
-        // if (defaultPipeline.depthOfFieldEnabled && defaultPipeline.depthOfField.isSupported) {
-        //     defaultPipeline.depthOfFieldBlurLevel = BABYLON.DepthOfFieldEffectBlurLevel.Low;
-        //     defaultPipeline.depthOfField.fStop = 0.95; // 1.4 by default
-        //     defaultPipeline.depthOfField.focalLength = 250; // 50 by default, mm
-        //     defaultPipeline.depthOfField.lensSize = 250; // 50 by default
-        //     // Calculate DoF Distance to target
-        //     scene.onBeforeRenderObservable.add(() => {
-        //         defaultPipeline.depthOfField.focusDistance = camera.radius * 1000; 
-        //     });
-        // }
-
-        /* grain */
-        // defaultPipeline.grainEnabled = true;
-        // if (defaultPipeline.grainEnabled) {
-        //     defaultPipeline.grain.animated = true; // false by default
-        //     defaultPipeline.grain.intensity = 7.5; // 30 by default
-        // }
-        
+        defaultPipeline.imageProcessingEnabled = false;
     }
-
-    // Debugging
-    console.log();
 
     // Show Inspector
     // scene.debugLayer.show();
-
 
     // Rendering Optimizations
     engine.setHardwareScalingLevel(1);
