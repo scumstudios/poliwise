@@ -126,6 +126,10 @@ const createScene = function(){
     defmat.iridescence.isEnabled = true;
     defmat.iridescence.indexOfRefraction = 1.8;
     
+    //Define Grid Material
+    const gridmat = new BABYLON.GridMaterial("gridmat", scene);
+    gridmat.mainColor = new BABYLON.Color3(0.22, 0, 0.65);
+    gridmat.lineColor = new BABYLON.Color3(0.882, 0.635, 1);
 
     // Background Sounds
     const sound = new BABYLON.Sound("forest", "../assets/birdloop.ogg", scene, null, { loop: true, autoplay: true });
@@ -164,27 +168,27 @@ const createScene = function(){
         BABYLON.SceneLoader.ImportMeshAsync("","../assets/", (tileName + ".glb")).then((result) => {
             result.meshes.forEach(mesh => {
                 // Define 
-                mesh.material = defmat;
+                mesh.material = gridmat;
                 mesh.receiveShadows = true;
                 sg.addShadowCaster(mesh, true);
     
                 // Set position
                 if(mesh.id != "__root__"){} else {mesh.position = tilePosition;}
-                
-                // Set outline
-                mesh.renderOutline = true;
-                mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
-                mesh.outlineWidth = 0.025;
     
                 // Glow, Dialog Pop & Movement
-                hl.addMesh(mesh, BABYLON.Color3.Yellow());
+                // hl.addMesh(mesh, BABYLON.Color3.Yellow());
     
                 mesh.actionManager = new BABYLON.ActionManager(scene);
                 mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
                     cam_move(tilePosition);
                     dialog_pop(dialogText);
-                    hl.removeMesh(mesh);
-                    // hl.addMesh(mesh, BABYLON.Color3.White());
+                    mesh.material = defmat;
+                    // hl.removeMesh(mesh);
+
+                    // Set outline
+                    mesh.renderOutline = true;
+                    mesh.outlineColor = new BABYLON.Color3(0, 0, 0);
+                    mesh.outlineWidth = 0.025;
                 }));
 
                 // TODO: Highlight
@@ -202,9 +206,13 @@ const createScene = function(){
 
     //Tile Loading
     loadTile("t_palace", new BABYLON.Vector3(0,0,0), "Dit is het kasteel van Laken.");
+    let startTile = scene.getMeshByName("t_Palace");
+    console.log(startTile);
+    //startTile.material = defmat;
+
     loadTile("t_parliament", new BABYLON.Vector3(0,0,-10), "Dit is het federaal parlement.");
     loadTile("t_debug", new BABYLON.Vector3(0,0,10), "0,0,10");
-    loadTile("t_debug", new BABYLON.Vector3(10,0,-10), "10,0,-10");
+    loadTile("t_senate", new BABYLON.Vector3(10,0,-10), "Dit is de senaat.");
     loadTile("t_debug", new BABYLON.Vector3(10,0,10), "10,0,10");
     loadTile("t_debug", new BABYLON.Vector3(10,0,0), "10,0,0");
     loadTile("t_debug", new BABYLON.Vector3(-10,0,10), "-10,0,10");

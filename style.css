@@ -155,7 +155,8 @@ html, body {
 
 #logoFrame {
     position: relative;
-    margin: auto;
+    margin-left: auto;
+    margin-right: 16px;
     width: 100px;
     height: 100px;
     background-color: var(--blue);
